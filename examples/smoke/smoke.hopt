@@ -1,0 +1,19 @@
+experiment: "smoke"
+variable {
+  name: "x"
+  type: FLOAT
+  sample {
+    distribution: LOG_UNIFORM
+    minimum: 1e-6
+    maximum: 1e-1
+  } 
+}
+variable {
+  name: "y"
+  type: INTEGER 
+  sample {
+    distribution: UNIFORM
+    minimum: 0
+    maximum: 10
+  } 
+}

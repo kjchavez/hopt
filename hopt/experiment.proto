@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package hopt;
+
+message SampleStrategy {
+  enum Distribution {
+    UNIFORM = 0;
+    LOG_UNIFORM = 1;
+  }
+  Distribution distribution = 1;
+  double minimum = 2;
+  double maximum = 3;
+}
+
+message Variable {
+  string name = 1;
+  enum Type {
+    UNKNOWN = 0;
+    FLOAT = 1;
+    INTEGER = 2;
+  }
+  Type type = 2;
+  SampleStrategy sample_strategy = 3;
+}
+
+message Experiment {
+  string experiment_name = 1;
+  repeated Variable variable = 2; 
+}
