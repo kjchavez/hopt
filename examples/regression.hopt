@@ -1,0 +1,13 @@
+experiment: "regression-example"
+variable {
+  name: "reg"
+  type: FLOAT
+  min: 1e-6
+  max: 1e-1
+}
+variable {
+  name: "lr"
+  type: FLOAT
+  min: 1e-5
+  max: 1e-2
+}
