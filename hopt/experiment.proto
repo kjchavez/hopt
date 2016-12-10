@@ -18,6 +18,7 @@ message Variable {
     UNKNOWN = 0;
     FLOAT = 1;
     INTEGER = 2;
+    ENUM = 3;
   }
   Type type = 2;
   SampleStrategy sample_strategy = 3;
