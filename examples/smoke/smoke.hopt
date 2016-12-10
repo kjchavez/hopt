@@ -1,19 +1,19 @@
-experiment: "smoke"
+experiment_name: "smoke"
 variable {
   name: "x"
   type: FLOAT
-  sample {
+  sample_strategy {
     distribution: LOG_UNIFORM
     minimum: 1e-6
     maximum: 1e-1
-  } 
+  }
 }
 variable {
   name: "y"
-  type: INTEGER 
-  sample {
+  type: INTEGER
+  sample_strategy {
     distribution: UNIFORM
     minimum: 0
     maximum: 10
-  } 
+  }
 }
