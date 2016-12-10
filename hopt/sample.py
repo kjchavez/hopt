@@ -34,11 +34,12 @@ def get_sample_function(var_type, sample_strategy):
     fn[(Variable.INTEGER, SampleStrategy.LOG_UNIFORM)] = _int_log_uniform_sample
     fn[(Variable.ENUM, SampleStrategy.UNIFORM)] = _enum_uniform_sample
 
-    if (var_type, sample_strategy.distribution) not in fn:
+    key = (var_type, sample_strategy.distribution)
+    if key not in fn:
         raise TypeError("No sampling function available for %s, %s" %
                         (var_type, sample_strategy.distribution))
 
-    return lambda: fn(sample_strategy.minimum, sample_strategy.maximum)
+    return lambda: fn[key](sample_strategy.minimum, sample_strategy.maximum)
 
 
 class ParameterSampler(object):
@@ -46,7 +47,7 @@ class ParameterSampler(object):
         self.variable_name = variable_def.name
         self.variable_type = variable_def.type
         self.sample_fn = get_sample_function(self.variable_type,
-                                             variable_def.sampling_strategy)
+                                             variable_def.sample_strategy)
         self.history = []
 
     def sample(self):
@@ -54,3 +55,13 @@ class ParameterSampler(object):
         sample = self.sample_fn()
         self.history.append(sample)
         return (self.variable_name, sample)
+
+
+class Experiment(object):
+    def __init__(self, experiment_def):
+        self.name = experiment_def.experiment_name
+        self.samplers = [ParameterSampler(var_def) for var_def in
+                         experiment_def.variable]
+
+    def sample_parameters(self):
+        return dict(sampler.sample() for sampler in self.samplers)

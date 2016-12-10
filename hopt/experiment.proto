@@ -24,7 +24,7 @@ message Variable {
   SampleStrategy sample_strategy = 3;
 }
 
-message Experiment {
+message ExperimentDef {
   string experiment_name = 1;
   repeated Variable variable = 2; 
 }
