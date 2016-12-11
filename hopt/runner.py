@@ -2,6 +2,7 @@ from __future__ import print_function
 
 import argparse
 import os
+import sys
 import time
 import uuid
 
@@ -17,12 +18,9 @@ def parse_args():
     return parser.parse_args()
 
 
-def format_results(params, upper_bound, iteration=None):
+def format_results(params, upper_bound, trial_id=""):
     out = "="*80 + '\n'
-    out += "Evaluation"
-    if iteration is not None:
-        out += " #%d" % iteration
-    out += "\n"
+    out += "Trial %s\n" % trial_id
     out += "="*80 + '\n'
     out += "Params:\n"
     for p, v in params.items():
@@ -71,8 +69,18 @@ def run_once(experiment):
     create_if_not_exists(experiment.output_dir)
     dirname = create_trial_directory(experiment.output_dir, params)
 
+    # TODO(kjchavez):
+    # - Redirect stdout to a file in that trial directory.
+    # - Write the latest upper bound and metadata
+    stdout_filename = os.path.join(os.path.join(experiment.output_dir, dirname),
+                                   'stdout.txt')
+    stdout = sys.stdout
+    sys.stdout = open(stdout_filename, 'a')
     value = experiment.evaluate_fn(params, time_limit=None)
-    print(format_results(params, value, iteration=1))
+
+    # Restore stdout.
+    sys.stdout = stdout
+    print(format_results(params, value, trial_id=dirname))
 
 
 def main():
