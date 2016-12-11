@@ -1,3 +1,4 @@
 # Generated Files
 *.pyc
 *_pb2.py
+trial-*/
