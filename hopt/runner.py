@@ -18,6 +18,10 @@ def parse_args():
     return parser.parse_args()
 
 
+def get_timestamp():
+    return time.strftime("%d %b %Y %H:%M:%S")
+
+
 def format_results(params, upper_bound, trial_id=""):
     out = "="*80 + '\n'
     out += "Trial %s\n" % trial_id
@@ -47,7 +51,7 @@ def create_trial_directory(root, params):
 
     # Add a metadata file with parameters and creation timestamp
     with open(os.path.join(full_name, TRIAL_METADATA_FILENAME), 'w') as fp:
-        print("Created at:", time.strftime("%d %b %Y %H:%M:%S"), file=fp)
+        print("Created at:", get_timestamp(), file=fp)
         print("\nParameters:", file=fp)
         print("-"*80, file=fp)
         for key, value in params.items():
@@ -63,20 +67,28 @@ def create_if_not_exists(path):
         os.makedirs(path)
 
 def run_once(experiment):
+    print("Writing output to", os.path.abspath(experiment.output_dir))
     params = experiment.sample_parameters()
 
     # Create a new directory for data from this trial.
     create_if_not_exists(experiment.output_dir)
     dirname = create_trial_directory(experiment.output_dir, params)
 
-    # TODO(kjchavez):
-    # - Redirect stdout to a file in that trial directory.
-    # - Write the latest upper bound and metadata
+    # Redirect stdout to a text file.
     stdout_filename = os.path.join(os.path.join(experiment.output_dir, dirname),
                                    'stdout.txt')
     stdout = sys.stdout
     sys.stdout = open(stdout_filename, 'a')
+
+    # Run the evaluation function.
     value = experiment.evaluate_fn(params, time_limit=None)
+
+    # Update results file.
+    results_filename = os.path.join(os.path.join(experiment.output_dir,
+                                                 dirname),
+                                    'results.txt')
+    with open(results_filename, 'a') as fp:
+        print('%f, %s' % (value, get_timestamp()), file=fp)
 
     # Restore stdout.
     sys.stdout = stdout

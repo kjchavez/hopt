@@ -32,4 +32,8 @@ message ExperimentDef {
   string module = 3;
   string pkg = 4;
   string path = 5;
+
+  // Configuration for output
+  // If provided, overrides the default output directory.
+  string output_path = 6;
 }

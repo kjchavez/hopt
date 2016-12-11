@@ -80,12 +80,17 @@ def get_eval_fn_python(experiment_def):
 
 
 class Experiment(object):
+    DEFAULT_OUTPUT_DIR = '/tmp/hopt/results'
     def __init__(self, experiment_def):
         self.name = experiment_def.experiment_name
         self.samplers = [ParameterSampler(var_def) for var_def in
                          experiment_def.variable]
         self.evaluate_fn = get_eval_fn_python(experiment_def)
-        self.output_dir = os.path.join("results", self.name)
+        if experiment_def.output_path:
+            self.output_dir = os.path.join(output_path, self.name)
+        else:
+            self.output_dir = os.path.join(Experiment.DEFAULT_OUTPUT_DIR,
+                                           self.name)
 
         # Note: we only support eval functions specified as python functions at
         # the moment.
