@@ -19,7 +19,10 @@ def parse_args():
 
 def format_results(params, upper_bound, iteration=None):
     out = "="*80 + '\n'
-    out += "Evaluation" + ("#%d\n" if iteration is not None else "\n")
+    out += "Evaluation"
+    if iteration is not None:
+        out += " #%d" % iteration
+    out += "\n"
     out += "="*80 + '\n'
     out += "Params:\n"
     for p, v in params.items():
@@ -55,12 +58,18 @@ def create_trial_directory(root, params):
 
     return dirname
 
+
+def create_if_not_exists(path):
+    assert (os.path.isdir(path) or not os.path.exists(path))
+    if not os.path.exists(path):
+        os.makedirs(path)
+
 def run_once(experiment):
     params = experiment.sample_parameters()
 
     # Create a new directory for data from this trial.
-    root = experiment.output_directory
-    dirname = create_trial_directory(experiment.name, params)
+    create_if_not_exists(experiment.output_dir)
+    dirname = create_trial_directory(experiment.output_dir, params)
 
     value = experiment.evaluate_fn(params, time_limit=None)
     print(format_results(params, value, iteration=1))

@@ -85,6 +85,7 @@ class Experiment(object):
         self.samplers = [ParameterSampler(var_def) for var_def in
                          experiment_def.variable]
         self.evaluate_fn = get_eval_fn_python(experiment_def)
+        self.output_dir = os.path.join("results", self.name)
 
         # Note: we only support eval functions specified as python functions at
         # the moment.
