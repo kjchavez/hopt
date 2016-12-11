@@ -1,4 +1,6 @@
 experiment_name: "smoke"
+path: "/home/kevin/projects/hopt/examples"
+module: "smoke.smoke_fn"
 variable {
   name: "x"
   type: FLOAT

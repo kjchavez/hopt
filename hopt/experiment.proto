@@ -27,4 +27,9 @@ message Variable {
 message ExperimentDef {
   string experiment_name = 1;
   repeated Variable variable = 2; 
+
+  // Information for loading the evaluation function.
+  string module = 3;
+  string pkg = 4;
+  string path = 5;
 }
