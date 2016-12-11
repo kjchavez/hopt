@@ -3,9 +3,7 @@ from hopt.experiment_pb2 import ExperimentDef
 
 import argparse
 from google.protobuf import text_format
-import importlib
-import os
-import sys
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -13,16 +11,23 @@ def parse_args():
                         help="Proto text file defining experiment")
     return parser.parse_args()
 
-def load_experiment_module(experiment_def):
-    module = experiment_def.module
-    package = experiment_def.pkg
-    if len(package) == 0:
-        package = None
 
-    if experiment_def.path:
-        sys.path.insert(0, os.path.abspath(experiment_def.path))
+def format_results(params, upper_bound, iteration=None):
+    out = "="*80 + '\n'
+    out += "Evaluation" + ("#%d\n" if iteration is not None else "\n")
+    out += "="*80 + '\n'
+    out += "Params:\n"
+    for p, v in params.items():
+        out += "%s = %s\n" % (p, str(v))
+    out += "\nUpper bound on value = %s\n" % (str(upper_bound),)
+    return out
 
-    return importlib.import_module(module, package=package)
+
+def run_once(experiment):
+    params = experiment.sample_parameters()
+    value = experiment.evaluate_fn(params, time_limit=None)
+    print format_results(params, value, iteration=1)
+
 
 def main():
     args = parse_args()
@@ -31,21 +36,8 @@ def main():
         experiment_def = text_format.Parse(fp.read(), ExperimentDef())
 
     experiment = Experiment(experiment_def)
-    exp_module = load_experiment_module(experiment_def)
+    run_once(experiment)
 
-    # Module must expose a top level function called 'main'
-    evaluate_fn = exp_module.main
-    params = experiment.sample_parameters()
-    value = evaluate_fn(params, time_limit=None)
-    print
-    print "="*80
-    print "Evaluation #1"
-    print "="*80
-    print "Params:"
-    for p, v in params.items():
-        print "%s = %s" % (p, str(v))
-    print
-    print "Upper bound on value =", value
 
 if __name__ == "__main__":
     main()

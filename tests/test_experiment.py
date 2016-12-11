@@ -3,6 +3,8 @@ import google.protobuf.text_format as text_format
 
 experiment_prototxt = """
 experiment_name: "smoke"
+path: "examples"
+module: "smoke.smoke_fn"
 variable {
   name: "x"
   type: FLOAT

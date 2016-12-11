@@ -1,5 +1,8 @@
 import numpy as np
+import importlib
+import os
 import random
+import sys
 from hopt.experiment_pb2 import *
 
 def _float_uniform_sample(minimum, maximum):
@@ -57,11 +60,36 @@ class ParameterSampler(object):
         return (self.variable_name, sample)
 
 
+def get_eval_fn_python(experiment_def):
+    """ Returns a handle to a python function that can be used to evaluate a
+        particular set of parameters.
+    """
+    module = experiment_def.module
+    package = experiment_def.pkg
+    if len(package) == 0:
+        package = None
+
+    if experiment_def.path:
+        sys.path.insert(0, os.path.abspath(experiment_def.path))
+
+    module = importlib.import_module(module, package=package)
+    if 'main' not in module.__dict__:
+        return None
+
+    return module.main
+
+
 class Experiment(object):
     def __init__(self, experiment_def):
         self.name = experiment_def.experiment_name
         self.samplers = [ParameterSampler(var_def) for var_def in
                          experiment_def.variable]
+        self.evaluate_fn = get_eval_fn_python(experiment_def)
+
+        # Note: we only support eval functions specified as python functions at
+        # the moment.
+        assert self.evaluate_fn is not None
 
     def sample_parameters(self):
         return dict(sampler.sample() for sampler in self.samplers)
+
