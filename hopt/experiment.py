@@ -87,10 +87,13 @@ class Experiment(object):
                          experiment_def.variable]
         self.evaluate_fn = get_eval_fn_python(experiment_def)
         if experiment_def.output_path:
-            self.output_dir = os.path.join(output_path, self.name)
+            self.output_dir = os.path.join(experiment_def.output_path, self.name)
         else:
             self.output_dir = os.path.join(Experiment.DEFAULT_OUTPUT_DIR,
                                            self.name)
+
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
         # Note: we only support eval functions specified as python functions at
         # the moment.

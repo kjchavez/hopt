@@ -7,6 +7,7 @@ import uuid
 
 from google.protobuf import text_format
 from hopt.experiment import Experiment
+from hopt.trial import TrialData
 from hopt.experiment_pb2 import ExperimentDef
 
 

@@ -1,9 +1,12 @@
 from __future__ import print_function
 
-import os
-import time
 import numpy as np
+import os
+import sys
+import time
+import uuid
 import yaml
+
 
 def get_timestamp():
     return time.strftime("%d %b %Y %H:%M:%S")
@@ -31,10 +34,10 @@ class TrialData(object):
         self.results_filename = os.path.join(trial_dir, 'results.txt')
         self.stdout_filename = os.path.join(trial_dir, 'stdout.txt')
 
-        self.score = _load_score()
+        self.score = self._load_score()
         if os.path.exists(self.metadata_filename):
             assert params is None
-            self.params = _load_params()
+            self.params =self. _load_params()
         else:
             self.params = params
             self._write_metadata()
@@ -74,14 +77,18 @@ class TrialData(object):
         sys.stdout = self.prev_stdout
 
     def update_score(self, new_score):
-        if new_score > self.score
+        if new_score > self.score:
             self.score = new_score
 
         with open(self.results_filename, 'a') as fp:
             print('%f, %s' % (value, get_timestamp()), file=fp)
 
 def new_trial(experiment):
-    pass
+    dirname = 'trial-' + str(uuid.uuid4()).split('-')[-1]
+    dirname = os.path.join(experiment.output_dir, dirname)
+    os.mkdir(dirname)
+    params = experiment.sample_parameters()
+    return TrialData(dirname, params=params)
 
 def existing_trial(trial_dir):
-    pass
+    return TrialData(dirname, params=None)
