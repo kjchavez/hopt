@@ -16,6 +16,7 @@ def parse_args():
     run_parser.add_argument("experiment_def", type=str,
                             help="ExperimentDef in proto text.")
     run_parser.add_argument("--num-trials", '-n', type=int,
+                            default=10,
                             help="Number of trials to execute.")
     run_parser.set_defaults(func=run)
 

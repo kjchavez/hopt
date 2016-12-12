@@ -7,12 +7,8 @@ import uuid
 
 from google.protobuf import text_format
 from hopt.experiment import Experiment
-from hopt.trial import TrialData
+from hopt.trial import TrialData, new_trial, existing_trial
 from hopt.experiment_pb2 import ExperimentDef
-
-
-def get_timestamp():
-    return time.strftime("%d %b %Y %H:%M:%S")
 
 
 def format_results(params, upper_bound, trial_id=""):
@@ -25,70 +21,15 @@ def format_results(params, upper_bound, trial_id=""):
     out += "\nUpper bound on value = %s\n" % (str(upper_bound),)
     return out
 
-def create_trial_directory(root, params):
-    """ Creates a new directory for storing info about a trial.
-
-    Arguments
-        root: root output directory, must already exist
-        experiment_name: name of the experiment which this trial belongs to
-        params: dictionary of parameters used for this trial
-
-    Returns:
-        name of new directory
-    """
-    TRIAL_METADATA_FILENAME = 'METADATA'
-    # Directory name is based on either: timestamp, counter, or uuid
-    dirname = 'trial-' + str(uuid.uuid4()).split('-')[-1]
-    full_name = os.path.join(root, dirname)
-    os.mkdir(full_name)
-
-    # Add a metadata file with parameters and creation timestamp
-    with open(os.path.join(full_name, TRIAL_METADATA_FILENAME), 'w') as fp:
-        print("Created at:", get_timestamp(), file=fp)
-        print("\nParameters:", file=fp)
-        print("-"*80, file=fp)
-        for key, value in params.items():
-            print("%s = %s" % (key, str(value)), file=fp)
-        print("-"*80, file=fp)
-
-    return dirname
-
-
-def create_if_not_exists(path):
-    assert (os.path.isdir(path) or not os.path.exists(path))
-    if not os.path.exists(path):
-        os.makedirs(path)
-
 
 def run_once(experiment):
-    params = experiment.sample_parameters()
+    trial = new_trial(experiment)
+    with trial:
+        # Run the evaluation function.
+        score = experiment.evaluate_fn(trial.params, time_limit=None)
+        trial.update_score(score)
 
-    # Create a new directory for data from this trial.
-    create_if_not_exists(experiment.output_dir)
-    dirname = create_trial_directory(experiment.output_dir, params)
-
-    # Redirect stdout to a text file.
-    stdout_filename = os.path.join(os.path.join(experiment.output_dir, dirname),
-                                   'stdout.txt')
-    stdout = sys.stdout
-    sys.stdout = open(stdout_filename, 'a')
-
-    # Run the evaluation function.
-    value = experiment.evaluate_fn(params, time_limit=None)
-
-    # Update results file.
-    results_filename = os.path.join(os.path.join(experiment.output_dir,
-                                                 dirname),
-                                    'results.txt')
-    with open(results_filename, 'a') as fp:
-        print('%f, %s' % (value, get_timestamp()), file=fp)
-
-    # Restore stdout.
-    sys.stdout = stdout
-    print(format_results(params, value, trial_id=dirname))
-    print("Output dir:", os.path.join(os.path.abspath(experiment.output_dir),
-                                      dirname))
-    print ("="*80)
+    print(format_results(trial.params, trial.score, trial_id=trial.trial_dir))
 
 def run_n_trials(experiment_def, N):
     """ Loads ExperimentDef and runs N trials sequentially. """

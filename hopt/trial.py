@@ -81,7 +81,7 @@ class TrialData(object):
             self.score = new_score
 
         with open(self.results_filename, 'a') as fp:
-            print('%f, %s' % (value, get_timestamp()), file=fp)
+            print('%f, %s' % (new_score, get_timestamp()), file=fp)
 
 def new_trial(experiment):
     dirname = 'trial-' + str(uuid.uuid4()).split('-')[-1]
