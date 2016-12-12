@@ -2,3 +2,4 @@
 *.pyc
 *_pb2.py
 trial-*/
+*.egg-info/
