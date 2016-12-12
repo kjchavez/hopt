@@ -66,8 +66,8 @@ def create_if_not_exists(path):
     if not os.path.exists(path):
         os.makedirs(path)
 
+
 def run_once(experiment):
-    print("Writing output to", os.path.abspath(experiment.output_dir))
     params = experiment.sample_parameters()
 
     # Create a new directory for data from this trial.
@@ -93,17 +93,22 @@ def run_once(experiment):
     # Restore stdout.
     sys.stdout = stdout
     print(format_results(params, value, trial_id=dirname))
+    print("Output dir:", os.path.join(os.path.abspath(experiment.output_dir),
+                                      dirname))
+    print ("="*80)
 
-
-def main():
-    args = parse_args()
-
-    with open(args.experiment_def) as fp:
+def run_n_trials(experiment_def, N):
+    """ Loads ExperimentDef and runs N trials sequentially. """
+    with open(experiment_def) as fp:
         experiment_def = text_format.Parse(fp.read(), ExperimentDef())
 
     experiment = Experiment(experiment_def)
-    run_once(experiment)
+    for _ in xrange(N):
+        run_once(experiment)
 
+def main():
+    args = parse_args()
+    run_n_trials(args.experiment_def, 1)
 
 if __name__ == "__main__":
     main()
