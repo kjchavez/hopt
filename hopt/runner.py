@@ -1,6 +1,5 @@
 from __future__ import print_function
 
-import argparse
 import os
 import sys
 import time
@@ -9,13 +8,6 @@ import uuid
 from google.protobuf import text_format
 from hopt.experiment import Experiment
 from hopt.experiment_pb2 import ExperimentDef
-
-
-def parse_args():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("experiment_def", type=str,
-                        help="Proto text file defining experiment")
-    return parser.parse_args()
 
 
 def get_timestamp():
@@ -106,9 +98,3 @@ def run_n_trials(experiment_def, N):
     for _ in xrange(N):
         run_once(experiment)
 
-def main():
-    args = parse_args()
-    run_n_trials(args.experiment_def, 1)
-
-if __name__ == "__main__":
-    main()
