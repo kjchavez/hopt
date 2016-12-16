@@ -7,6 +7,8 @@ Simple harness for hyperparameter optimization. Primarily for TensorFlow models.
 * Support specifying the search space and sampling strategy. (DONE)
 * Create well-structured output directories. (DONE)
 * Allow *continuing* or *refining* a simple experiment instance manually.
+   * Resuming a trial (DONE)
+   * Changing the search space for a single experiment... not in scope for V0
 * Command line utility for all of this. (DONE)
 
 
