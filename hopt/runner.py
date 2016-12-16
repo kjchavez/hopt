@@ -40,3 +40,15 @@ def run_n_trials(experiment_def, N):
     for _ in xrange(N):
         run_once(experiment)
 
+def resume_trial(experiment_def, trial_dir):
+    trial = existing_trial(trial_dir)
+    with open(experiment_def) as fp:
+        experiment_def = text_format.Parse(fp.read(), ExperimentDef())
+
+    experiment = Experiment(experiment_def)
+    with trial:
+        score = experiment.evaluate_fn(trial.params, time_limit=None)
+        trial.update_score(score)
+
+    print(format_results(trial.params, trial.score, trial_id=trial.trial_dir))
+

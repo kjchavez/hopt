@@ -26,8 +26,10 @@ Ex 2.
         trial.update_score(value)
 """
 class TrialData(object):
-    def __init__(self, trial_dir, params=None):
+    def __init__(self, trial_dir, params=None, experiment=None):
         self.trial_dir = trial_dir
+        if experiment:
+            self.experiment = experiment
 
         # Important filenames
         self.metadata_filename = os.path.join(trial_dir, 'METADATA')
@@ -66,6 +68,7 @@ class TrialData(object):
         metadata = {}
         metadata['start_timestamp'] = get_timestamp()
         metadata['parameters'] = self.params
+        metadata['experiment_def_path'] = self.experiment_def_path
         with open(self.metadata_filename, 'w') as fp:
             yaml.dump(metadata, fp)
 
@@ -83,6 +86,9 @@ class TrialData(object):
         with open(self.results_filename, 'a') as fp:
             print('%f, %s' % (new_score, get_timestamp()), file=fp)
 
+    def get_experiment(self):
+        """ Reconstructs (if necessary) and returns parent experiment. """
+
 def new_trial(experiment):
     dirname = 'trial-' + str(uuid.uuid4()).split('-')[-1]
     dirname = os.path.join(experiment.output_dir, dirname)
@@ -91,4 +97,4 @@ def new_trial(experiment):
     return TrialData(dirname, params=params)
 
 def existing_trial(trial_dir):
-    return TrialData(dirname, params=None)
+    return TrialData(trial_dir, params=None)
