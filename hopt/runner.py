@@ -11,14 +11,14 @@ from hopt.trial import TrialData, new_trial, existing_trial
 from hopt.experiment_pb2 import ExperimentDef
 
 
-def format_results(params, upper_bound, trial_id=""):
+def format_results(params, lower_bound, trial_id=""):
     out = "="*80 + '\n'
     out += "Trial %s\n" % trial_id
     out += "="*80 + '\n'
     out += "Params:\n"
     for p, v in params.items():
         out += "%s = %s\n" % (p, str(v))
-    out += "\nUpper bound on value = %s\n" % (str(upper_bound),)
+    out += "\nLower bound on value = %s\n" % (str(lower_bound),)
     return out
 
 

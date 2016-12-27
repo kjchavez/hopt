@@ -19,7 +19,7 @@ The user specifies:
 
 - An ExperimentDef proto which defines the search space and
   sampling strategy for the parameters.
-- A function that takes the parameters and a time limit and returns an upper
+- A function that takes the parameters and a time limit and returns an lower 
   bound on the value of that set of parameters.
 
 Some questions.
