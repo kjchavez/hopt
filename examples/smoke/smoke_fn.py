@@ -1,4 +1,4 @@
-def main(params, time_limit=None):
+def main(params, trial_dir, time_limit=None):
     if 'x' not in params or 'y' not in params:
         # Invalid set of params
         return None

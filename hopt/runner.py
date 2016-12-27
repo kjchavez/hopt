@@ -26,7 +26,8 @@ def run_once(experiment):
     trial = new_trial(experiment)
     with trial:
         # Run the evaluation function.
-        score = experiment.evaluate_fn(trial.params, time_limit=None)
+        score = experiment.evaluate_fn(trial.params, trial.trial_dir,
+                                       time_limit=None)
         trial.update_score(score)
 
     print(format_results(trial.params, trial.score, trial_id=trial.trial_dir))
@@ -47,7 +48,8 @@ def resume_trial(experiment_def, trial_dir):
 
     experiment = Experiment(experiment_def)
     with trial:
-        score = experiment.evaluate_fn(trial.params, time_limit=None)
+        score = experiment.evaluate_fn(trial.params, trial.trial_dir,
+                                       time_limit=None)
         trial.update_score(score)
 
     print(format_results(trial.params, trial.score, trial_id=trial.trial_dir))

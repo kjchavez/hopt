@@ -1,0 +1,21 @@
+experiment_name: "regression"
+path: "/home/kevin/projects/hopt/examples"
+module: "regression.train"
+variable {
+  name: "reg"
+  type: FLOAT
+  sample_strategy {
+    distribution: LOG_UNIFORM
+    minimum: 1e-6
+    maximum: 1e-1
+  }
+}
+variable {
+  name: "lr"
+  type: FLOAT 
+  sample_strategy {
+    distribution: LOG_UNIFORM
+    minimum: 1e-5
+    maximum: 1e-1
+  }
+}

@@ -35,6 +35,7 @@ class TrialData(object):
         self.metadata_filename = os.path.join(trial_dir, 'METADATA')
         self.results_filename = os.path.join(trial_dir, 'results.txt')
         self.stdout_filename = os.path.join(trial_dir, 'stdout.txt')
+        self.stderr_filename = os.path.join(trial_dir, 'stderr.txt')
 
         self.score = self._load_score()
         if os.path.exists(self.metadata_filename):
@@ -68,16 +69,19 @@ class TrialData(object):
         metadata = {}
         metadata['start_timestamp'] = get_timestamp()
         metadata['parameters'] = self.params
-        metadata['experiment_def_path'] = self.experiment_def_path
+        # metadata['experiment_def_path'] = self.experiment_def_path
         with open(self.metadata_filename, 'w') as fp:
             yaml.dump(metadata, fp)
 
     def __enter__(self):
         self.prev_stdout = sys.stdout
+        self.prev_stderr = sys.stderr
         sys.stdout = open(self.stdout_filename, 'a')
+        sys.stderr = open(self.stderr_filename, 'a')
 
     def __exit__(self, type, value, traceback):
         sys.stdout = self.prev_stdout
+        sys.stderr = self.prev_stderr
 
     def update_score(self, new_score):
         if new_score > self.score:
