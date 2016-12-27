@@ -62,7 +62,11 @@ def get_val_data():
     return get_data(800, 1000)
 
 def main(params, trial_dir, time_limit=None):
-    tf.logging.set_verbosity(tf.logging.INFO)
+    # Instead of using the tf logging for information:
+    #   tf.logging.set_verbosity(tf.logging.INFO)
+    # we will explicitly record information of interest. Still need to figure
+    # out how to redirect all of TF output to those stdout, stderr files we
+    # create in the trial directory.
 
     model_dir = os.path.join(trial_dir, "model")
     print("Saving to %s" % model_dir)
